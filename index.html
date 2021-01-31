@@ -3,30 +3,129 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Name</title>
+    <title>Location Based AR.js demo</title>
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js">
-</script>
-
-    <script src="./voice.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js"></script>
+    <script src="./voice.js"></script>
   </head>
 
-  <body style="margin: 0; overflow: visible;">
-
+  <body style="margin: 0; overflow: hidden;">
     <a-scene
-      id="scenery"
-      vr-mode-ui="enabled: false"
+      vr-mode-ui="enabled: true"
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
-
     >
+      <!--<a-text
+        value = "Hello World ;)"
+        look-at="[gps-camera]"
+        scale="2 2 2"
 
-      <a-camera gps-camera rotation-reader> </a-camera>
+      ></a-text>
+      -->
 
+      <a-camera rotation-reader> </a-camera>
     </a-scene>
-<!--    <b id="lat"> </b> <span>|</span><b id="geo">  </b>-->
 
+    <script>
+
+      function handlePermission() {
+  navigator.permissions.query({name:'geolocation'}).then(function(result) {
+    if (result.state == 'granted') {
+      report(result.state);
+      //geoBtn.style.display = 'none';
+    } else if (result.state == 'prompt') {
+      report(result.state);
+      //geoBtn.style.display = 'none';
+      navigator.geolocation.getCurrentPosition(revealPosition,positionDenied,geoSettings);
+    } else if (result.state == 'denied') {
+      report(result.state);
+      //geoBtn.style.display = 'inline';
+    }
+    result.onchange = function() {
+      report(result.state);
+    }
+  });
+}
+
+function report(state) {
+  console.log('Permission ' + state);
+}
+
+handlePermission();
+      /*function successGeo() {
+        console.log("successfully got geoperm")
+      }
+      function failGeo() {
+        console.log("fail geo")
+      }
+*/
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+var dataObj;
+fetch("https://f3bd2dd3a5b9.ngrok.io/getdata", requestOptions)
+  .then(response => response.json())
+  .then(result => {console.log(result);
+                   dataObj = result.data;
+                  })
+  .catch(error => console.log('error', error));
+
+
+
+window.onclick = function() {
+
+       //   navigator.geolocation.getCurrentPosition(successGeo, failGeo);
+  document.querySelector('a-camera').setAttribute('gps-camera', 'minDistance:20;');
+allData = [
+    {
+      message: "Mal's place",
+      latitude: "29.667063",
+      longitude: "-82.353258"
+    },
+    {
+      message: "Sohil's Place",
+      latitude: "29.654000",
+      longitude: "-82.345630"
+    },
+    {
+      message: "Gabe's crib",
+      latitude: "29.6134112,",
+      longitude: "-82.3634220"
+    },
+    {
+      message: "",
+      latitude: "1",
+      longitude: "32323"
+    }//,...
+   ]
+dataObj.forEach(element => { /// look up syntax
+  console.log(element);
+    let scene = document.querySelector('a-scene');
+    let newText = document.createElement('a-text');
+    let latitude = element.latitude;
+    let longitude = element.longitude;
+    let value = element.message;
+    console.log(value);
+    let location = document.createAttribute('gps-entity-place');
+    location.value ='latitude: '+ element[0]+ '; longitude: ' + element[1];
+    newText.setAttributeNode(location);
+    newText.setAttribute('value', element[2]);
+    newText.setAttribute('look-at', "[gps-camera]");
+    newText.setAttribute('scale', {x: 8, y: 8, z: 8});
+    scene.appendChild(newText);
+
+
+})
+
+}
+
+
+        </script>
   </body>
 </html>

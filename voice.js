@@ -93,36 +93,56 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     recognizer.startContinuousRecognitionAsync();
     var timer;
-    //var preventTimeoutCall;
     recognizer.recognizing = (s, e) => {
-      //textBox.innerHTML = e.result.text;
       console.log(`RECOGNIZING: Text=${e.result.text}`);
       if (e.result.text.length + 3 > currentSpeech.length) {
         currentSpeech = e.result.text;
-        // try {
-        //   preventTimeoutCall = true;
-        //   // clearTimeout(timer);
-        //   //console.log(preventTimeoutCall);
-        // } catch (e) {
-        //   console.log('timer not initialized');
-        // }
+
         preventTimeoutCall = false;
         timer = setTimeout(function () {
           console.log('After setting timer: ' + preventTimeoutCall);
         }, TIMEOUT);
-        // console.log(currentSpeech);
       } else {
-        //preventTimeoutCall = false;
-        //clearTimeout(timer);
         if (currentSpeech.includes("leave note")) {
           console.log("final speech to send: " + currentSpeech.split("leave note")[1])
-          location.reload();
-          //run funtion to send speech
+          var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({"latitude":lat,"longitude":long,"message":currentSpeech.split("leave note")[1]});
+
+      var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+      };
+
+fetch("https://f3bd2dd3a5b9.ngrok.io/insert", requestOptions)
+  .then(response => response.text())
+  .then(result => location.reload())
+  .catch(error => console.log('error', error));
+          //location.reload();
         }
         else if (currentSpeech.includes("leave no")) {
           console.log("final speech to send: " + currentSpeech.split("leave no")[1])
-          location.reload();
-          //run funtion to send speech
+                 var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({"latitude":lat,"longitude":long,"message":currentSpeech.split("leave no")[1]});
+
+      var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+      };
+
+fetch("https://f3bd2dd3a5b9.ngrok.io/insert", requestOptions)
+  .then(response => response.text())
+  .then(result => location.reload())
+  .catch(error => console.log('error', error));
+          //location.reload();
+
         }
         else {
         preventTimeoutCall = true;
