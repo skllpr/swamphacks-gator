@@ -1,0 +1,17 @@
+While we workout let me explain our  tech stack.
+Notation uses the geolocation API to find user location and
+microsoft azure
+cognitive services to convert speech into text
+and look for keyword leave note to leave a message
+at that location by sending the request to
+------------------------------------
+a flask endpoint which adds data to a cockroachDB
+on the cloud. CockroachDB was a nice method to save
+the location of messages in a central place.
+ This database then provides messages
+to the user.
+------------------------------------
+The user can view these messages in AR through Aframes
+Aframes renders the messages in the user's view when
+they get close to the message. Looks like workout time
+is done! On to the potato
