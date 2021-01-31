@@ -9,7 +9,7 @@ list = 1
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/")
+@app.route("/",methods = ['POST', 'GET'])
 def hello():
     return "Swamphacks Project"
 
@@ -24,16 +24,17 @@ def initialize(conn):
 
 def delete_table(conn):
     with conn.cursor() as cur:
-        cur.execute("DELETE FROM notes.messages")
+        cur.execute("DELETE FROM messages ")
         logging.debug("delete_table(): status message: %s", cur.statusmessage)
     conn.commit()
 
-@app.route("/delete")
+@app.route("/delete",methods = ['POST', 'GET'])
 def delete():
     opt = parse_cmdline()
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
     conn = psycopg2.connect(opt.dsn)
     delete_table(conn)
+    return "Deleted"
 
 def print_content(conn):
     with conn.cursor() as cur:
@@ -46,7 +47,7 @@ def print_content(conn):
             print(row)
         return rows
 
-@app.route("/getdata")
+@app.route("/getdata",methods = ['POST', 'GET'])
 def getdata():
     opt = parse_cmdline()
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
@@ -58,29 +59,24 @@ def insert_row(conn, latitude, longitude, message):
     with conn.cursor() as cur:
 
         # Check the current balance.
-        cur.execute("UPSERT INTO messages VALUES ("+list+", "+latitude+", "+longitude+", "+message+")")
+        global list
+        cur.execute("UPSERT INTO messages VALUES ("+str(list)+", '"+str(latitude)+"', '"+str(longitude)+"', '"+message+"')")
         list = list +1
-
-        if latitude > 90 or latitude < -90:
-            raise RuntimeError(
-                f"Invalid latitude"
-            )
-
-        if longitude > 180 or longitude < -180:
-            raise RuntimeError(
-                f"Invalid longitude"
-            )
 
     conn.commit()
     logging.debug("insert_row(): status message: %s", cur.statusmessage)
 
-@app.route('/insert')
+@app.route('/insert',methods = ['POST', 'GET'])
 def insert():
     content = request.json
+    print("hii")
+    print(content)
+    print("hii")
     opt = parse_cmdline()
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
     conn = psycopg2.connect(opt.dsn)
-    insert_row(conn, content.latitude, content.longitude, content.message)
+    insert_row(conn, content["latitude"], content["longitude"], content["message"])
+    return "Inserted"
 
 def main():
     opt = parse_cmdline()
