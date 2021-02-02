@@ -1,4 +1,4 @@
-# swamphacks-gator
+# Notation
 ## Inspiration 💡
 Notation took its original concept from the Dark Souls⚔️ series, and the iconic messaging mechanic the game introduced. Players across worlds could leave messages for others to find, either as a boon or to trick them. The sense of community this brought to the game was one we felt could be transferred to real life through the creation of Notation. Notation takes additional inspiration from AR and location based apps such as Ingress and Pokemon GO to make users see the world around them in a new way!
 ## What it does 🥽
